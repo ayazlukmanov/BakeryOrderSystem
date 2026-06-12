@@ -132,30 +132,27 @@ namespace BakeryOrderSystem.Controllers
 
             return View(product);
         }
-
         [HttpPost]
         public async Task<IActionResult> Edit(Product product)
         {
-       
-    var role = HttpContext.Session.GetString("Role");
+            var role = HttpContext.Session.GetString("Role");
 
-if (!RoleCheck.IsAdminOrManager(role))
-{
-    TempData["Error"] = "У вас нет прав для доступа к данному разделу.";
-    return RedirectToAction("Index", "Home");
-}
-
-            var productInOrder = await _context.OrderItems
-                .AnyAsync(oi => oi.ProductId == product.Id);
-
-            if (productInOrder)
+            if (!RoleCheck.IsAdminOrManager(role))
             {
-                TempData["Error"] = "Нельзя изменить товар, так как он уже используется в заказах.";
-                return RedirectToAction(nameof(Index));
+                TempData["Error"] = "У вас нет прав для доступа к данному разделу.";
+                return RedirectToAction("Index", "Home");
             }
 
             product.Description ??= "";
             product.Category ??= "";
+
+            var existingProduct = await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == product.Id);
+
+            if (existingProduct == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
             var category = await _context.Categories
                 .FirstOrDefaultAsync(c => c.Name == product.Category);
@@ -171,9 +168,13 @@ if (!RoleCheck.IsAdminOrManager(role))
                 await _context.SaveChangesAsync();
             }
 
-            product.CategoryId = category.Id;
+            existingProduct.Name = product.Name;
+            existingProduct.Description = product.Description;
+            existingProduct.Price = product.Price;
+            existingProduct.Category = product.Category;
+            existingProduct.CategoryId = category.Id;
+            existingProduct.IsAvailable = product.IsAvailable;
 
-            _context.Products.Update(product);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
