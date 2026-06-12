@@ -1,0 +1,19 @@
+﻿@model BakeryOrderSystem.Models.Category
+
+<h1>Добавление категории</h1>
+
+<form asp-action="Create">
+
+    <div class="mb-3">
+        <label class="form-label">
+            Название категории
+        </label>
+
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Сохранить
+    </button>
+
+</form>

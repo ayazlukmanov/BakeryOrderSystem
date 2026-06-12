@@ -1,0 +1,40 @@
+﻿@model IEnumerable<BakeryOrderSystem.Models.Customer>
+
+<h1>Клиенты</h1>
+
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text"
+               name="search"
+               value="@ViewBag.Search"
+               class="form-control"
+               placeholder="Поиск по ФИО, телефону или email" />
+
+        <button type="submit" class="btn btn-primary">Найти</button>
+
+        <a asp-action="Index" class="btn btn-secondary">Сбросить</a>
+    </div>
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ФИО</th>
+            <th>Телефон</th>
+            <th>Email</th>
+            <th>Адрес</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var customer in Model)
+        {
+            <tr>
+                <td>@customer.FullName</td>
+                <td>@customer.Phone</td>
+                <td>@customer.Email</td>
+                <td>@customer.Address</td>
+            </tr>
+        }
+    </tbody>
+</table>

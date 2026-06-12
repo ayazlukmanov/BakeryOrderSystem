@@ -1,0 +1,39 @@
+﻿@model BakeryOrderSystem.Models.User
+
+<h1>Редактирование пользователя</h1>
+
+<form asp-action="Edit" method="post">
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="FullName" class="form-label">ФИО</label>
+        <input asp-for="FullName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Login" class="form-label">Логин</label>
+        <input asp-for="Login" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label">Пароль</label>
+        <input asp-for="Password" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="RoleId" class="form-label">Роль</label>
+        <select asp-for="RoleId" asp-items="ViewBag.Roles" class="form-control">
+            <option value="">Выберите роль</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Сохранить
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Назад
+    </a>
+
+</form>

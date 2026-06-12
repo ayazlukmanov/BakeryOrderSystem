@@ -1,0 +1,68 @@
+﻿@model BakeryOrderSystem.Models.Product
+
+<h1>Редактирование продукции</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Название</label>
+
+        <select id="productSelect" class="form-control">
+            <option value="">Выберите товар</option>
+
+            @foreach (var product in ViewBag.Products)
+            {
+                <option value="@product.Name"
+                        data-description="@product.Description"
+                        data-category="@product.Category"
+                        selected="@(product.Name == Model.Name)">
+                    @product.Name
+                </option>
+            }
+        </select>
+
+        <input type="hidden" asp-for="Name" id="productName" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Описание</label>
+        <input asp-for="Description" id="productDescription" class="form-control" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Category" class="form-label">Категория</label>
+        <input asp-for="Category" id="productCategory" class="form-control" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Цена</label>
+        <input asp-for="Price" class="form-control" />
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="IsAvailable" class="form-check-input" />
+        <label class="form-check-label">Доступен</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>
+@section Scripts {
+    <script>
+        document.getElementById("productSelect").addEventListener("change", function () {
+            const selected = this.options[this.selectedIndex];
+
+            document.getElementById("productName").value = selected.value || "";
+            document.getElementById("productDescription").value = selected.getAttribute("data-description") || "";
+            document.getElementById("productCategory").value = selected.getAttribute("data-category") || "";
+        });
+
+        window.addEventListener("load", function () {
+            const select = document.getElementById("productSelect");
+            const selected = select.options[select.selectedIndex];
+
+            document.getElementById("productName").value = selected.value || "";
+        });
+    </script>
+}

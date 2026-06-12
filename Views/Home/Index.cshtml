@@ -1,0 +1,121 @@
+﻿@{
+    ViewData["Title"] = "Главная";
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="text-center mb-5">
+    <h1 class="display-4 fw-bold">
+        Информационная система пекарни
+    </h1>
+
+    <p class="lead">
+        Система учета и управления заказами для предприятия малого бизнеса
+    </p>
+</div>
+
+@if (ViewBag.ShowStatistics == true)
+{
+    <div class="row text-center mb-5">
+
+        <div class="col-md-3">
+            <div class="border rounded p-3 shadow-sm">
+                <h3>@ViewBag.ProductsCount</h3>
+                <p>Товаров</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="border rounded p-3 shadow-sm">
+                <h3>@ViewBag.CustomersCount</h3>
+                <p>Клиентов</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="border rounded p-3 shadow-sm">
+                <h3>@ViewBag.OrdersCount</h3>
+                <p>Заказов</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="border rounded p-3 shadow-sm">
+                <h3>@ViewBag.TotalRevenue ₽</h3>
+                <p>Выручка</p>
+            </div>
+        </div>
+
+    </div>
+}
+
+<div class="row">
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body text-center">
+
+                <h3>Продукция</h3>
+
+                <p>
+                    Управление товарами и выпечкой пекарни.
+                </p>
+
+                <a asp-controller="Products"
+                       asp-action="Index"
+                       class="btn btn-primary">
+                    Перейти
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body text-center">
+
+                <h3>Клиенты</h3>
+
+                <p>
+                    Хранение данных клиентов и контактной информации.
+                </p>
+
+                <a asp-controller="Customers"
+                       asp-action="Index"
+                       class="btn btn-primary">
+                    Перейти
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body text-center">
+
+                <h3>Заказы</h3>
+
+                <p>
+                    Создание и управление заказами клиентов.
+                </p>
+
+                <a asp-controller="Orders"
+                       asp-action="Index"
+                       class="btn btn-primary">
+                    Перейти
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+</div>

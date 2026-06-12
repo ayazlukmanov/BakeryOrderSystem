@@ -1,0 +1,109 @@
+﻿@model IEnumerable<BakeryOrderSystem.Models.Order>
+
+<h1>Заказы</h1>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+<a asp-action="Create" class="btn btn-success mb-3">
+    Добавить заказ
+</a>
+<form asp-action="Index" method="get" class="row mb-3">
+
+    <div class="col-md-2">
+        <input type="text"
+               name="search"
+               value="@ViewBag.Search"
+               class="form-control"
+               placeholder="Поиск по клиенту, сотруднику или статусу" />
+    </div>
+
+    <div class="col-md-2">
+        <select name="status" class="form-control">
+            <option value="">Все статусы</option>
+
+            @foreach (var status in ViewBag.Statuses)
+            {
+                <option value="@status">
+                    @status
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <select name="employee" class="form-control">
+
+            <option value="">Все сотрудники</option>
+
+            @foreach (var employee in ViewBag.Employees)
+            {
+                <option value="@employee">
+                    @employee
+                </option>
+            }
+
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <select name="sortOrder" class="form-control">
+            <option value="">Сначала новые</option>
+            <option value="date_asc">Сначала старые</option>
+            <option value="price_asc">Сумма: по возрастанию</option>
+            <option value="price_desc">Сумма: по убыванию</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary w-100">
+            Применить
+        </button>
+    </div>
+
+</form>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Клиент</th>
+            <th>Сотрудник</th>
+            <th>Дата</th>
+            <th>Статус</th>
+            <th>Комментарий</th>
+            <th>Сумма</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.Id</td>
+                <td>@order.Customer.FullName</td>
+                <td>@order.User.FullName</td>
+                <td>@order.OrderDate</td>
+                <td>@order.Status</td>
+                <td>@order.Comment</td>
+                <td>@order.TotalPrice ₽</td>
+
+                <td>
+                    <a asp-action="Edit"
+                           asp-route-id="@order.Id"
+                           class="btn btn-warning btn-sm">
+                        Изменить
+                    </a>
+
+                    <a asp-action="Delete"
+                           asp-route-id="@order.Id"
+                           class="btn btn-danger btn-sm">
+                        Удалить
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

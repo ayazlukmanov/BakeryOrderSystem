@@ -1,0 +1,28 @@
+﻿@model IEnumerable<BakeryOrderSystem.Models.LoginLog>
+
+<h1>Журнал входа и выхода сотрудников</h1>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Сотрудник</th>
+            <th>Время входа</th>
+            <th>Время выхода</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var log in Model)
+        {
+            <tr>
+                <td>@log.UserName</td>
+                <td>@log.LoginTime.ToString("dd.MM.yyyy HH:mm")</td>
+                <td>
+                    @(log.LogoutTime.HasValue
+                        ? log.LogoutTime.Value.ToString("dd.MM.yyyy HH:mm")
+                        : "Смена открыта")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
