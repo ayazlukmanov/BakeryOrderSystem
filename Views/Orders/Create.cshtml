@@ -16,34 +16,53 @@
         <select name="CustomerId" asp-items="ViewBag.Customers" class="form-control"></select>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Товар</label>
-        <select name="ProductId" id="productSelect" class="form-control">
-            @foreach (var product in ViewBag.Products)
-            {
-                <option value="@product.Id"
-                        data-price="@product.Price"
-                        data-stock="@product.StockQuantity">
-                    @product.Name
-                </option>
-            }
-        </select>
+    <div id="itemsContainer">
+
+        <div class="row mb-3 order-item">
+            <div class="col-md-6">
+                <label class="form-label">Товар</label>
+                <select name="ProductIds" class="form-control product-select">
+                    @foreach (var product in ViewBag.Products)
+                    {
+                        <option value="@product.Id"
+                                data-price="@product.Price"
+                                data-stock="@product.StockQuantity">
+                            @product.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Количество</label>
+                <input name="Quantities"
+                       class="form-control quantity-input"
+                       type="number"
+                       min="1"
+                       value="1"
+                       required />
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="button"
+                        class="btn btn-danger remove-item">
+                    Удалить
+                </button>
+            </div>
+        </div>
+
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Количество</label>
-        <input name="Quantity"
-               id="quantityInput"
-               class="form-control"
-               type="number"
-               min="1"
-               value="1"
-               required />
-    </div>
+    <button type="button"
+            id="addItem"
+            class="btn btn-success mb-3">
+        Добавить ещё товар
+    </button>
 
     <div class="alert alert-info">
-        <div>Цена за штуку: <strong><span id="priceText">0</span> ₽</strong></div>
-        <div>Остаток на складе: <strong><span id="stockText">0</span> шт.</strong></div>
+        <strong>Состав заказа:</strong>
+        <div id="orderSummary"></div>
+        <hr />
         <div>Итого: <strong><span id="totalText">0</span> ₽</strong></div>
     </div>
 
@@ -70,23 +89,68 @@
 @section Scripts {
     <script>
         function updateOrderInfo() {
-            const select = document.getElementById("productSelect");
-            const quantityInput = document.getElementById("quantityInput");
+            let total = 0;
+            let summaryHtml = "";
 
-            const selected = select.options[select.selectedIndex];
+            document.querySelectorAll(".order-item").forEach(function (row) {
+                const select = row.querySelector(".product-select");
+                const quantityInput = row.querySelector(".quantity-input");
 
-            const price = parseFloat(selected.getAttribute("data-price")) || 0;
-            const stock = parseInt(selected.getAttribute("data-stock")) || 0;
-            const quantity = parseInt(quantityInput.value) || 1;
+                const selected = select.options[select.selectedIndex];
 
-            document.getElementById("priceText").innerText = price.toFixed(2);
-            document.getElementById("stockText").innerText = stock;
-            document.getElementById("totalText").innerText = (price * quantity).toFixed(2);
+                const name = selected.text.trim();
+                const price = parseFloat(selected.getAttribute("data-price")) || 0;
+                const stock = parseInt(selected.getAttribute("data-stock")) || 0;
+                const quantity = parseInt(quantityInput.value) || 1;
+
+                total += price * quantity;
+
+                summaryHtml += `
+                    <div>
+                        ${name} × ${quantity} шт.
+                        — ${price.toFixed(2)} ₽ за шт.
+                        | Остаток: ${stock} шт.
+                    </div>`;
+            });
+
+            document.getElementById("orderSummary").innerHTML = summaryHtml;
+            document.getElementById("totalText").innerText = total.toFixed(2);
         }
 
-        document.getElementById("productSelect").addEventListener("change", updateOrderInfo);
-        document.getElementById("quantityInput").addEventListener("input", updateOrderInfo);
+        document.getElementById("addItem").addEventListener("click", function () {
+            const container = document.getElementById("itemsContainer");
+            const firstItem = container.querySelector(".order-item");
+            const clone = firstItem.cloneNode(true);
 
+            clone.querySelector(".quantity-input").value = 1;
+
+            container.appendChild(clone);
+            attachEvents();
+            updateOrderInfo();
+        });
+
+        function attachEvents() {
+            document.querySelectorAll(".product-select").forEach(function (select) {
+                select.onchange = updateOrderInfo;
+            });
+
+            document.querySelectorAll(".quantity-input").forEach(function (input) {
+                input.oninput = updateOrderInfo;
+            });
+
+            document.querySelectorAll(".remove-item").forEach(function (button) {
+                button.onclick = function () {
+                    const items = document.querySelectorAll(".order-item");
+
+                    if (items.length > 1) {
+                        button.closest(".order-item").remove();
+                        updateOrderInfo();
+                    }
+                };
+            });
+        }
+
+        attachEvents();
         updateOrderInfo();
     </script>
 }

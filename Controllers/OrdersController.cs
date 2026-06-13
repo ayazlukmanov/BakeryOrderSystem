@@ -96,42 +96,21 @@ namespace BakeryOrderSystem.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Create(
-            int CustomerId,
-            int ProductId,
-            int Quantity,
-            string Status,
-            string? Comment)
+     int CustomerId,
+     int[] ProductIds,
+     int[] Quantities,
+     string Status,
+     string? Comment)
         {
             var userName = HttpContext.Session.GetString("UserName");
 
             if (userName == null)
                 return RedirectToAction("Login", "Account");
 
-            var currentUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.FullName == userName);
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.FullName == userName);
 
             if (currentUser == null)
                 return RedirectToAction("Login", "Account");
-
-            var product = await _context.Products.FindAsync(ProductId);
-
-            if (product == null)
-            {
-                TempData["Error"] = "Выбранный товар не найден.";
-                return RedirectToAction(nameof(Create));
-            }
-
-            if (Quantity <= 0)
-            {
-                TempData["Error"] = "Количество товара должно быть больше нуля.";
-                return RedirectToAction(nameof(Create));
-            }
-
-            if (product.StockQuantity < Quantity)
-            {
-                TempData["Error"] = "Недостаточно товара на складе.";
-                return RedirectToAction(nameof(Create));
-            }
 
             var customer = await _context.Customers.FindAsync(CustomerId);
 
@@ -141,7 +120,46 @@ namespace BakeryOrderSystem.Controllers
                 return RedirectToAction(nameof(Create));
             }
 
-            var totalPrice = product.Price * Quantity;
+            var selectedItems = ProductIds
+                .Zip(Quantities, (productId, quantity) => new { productId, quantity })
+                .Where(x => x.productId > 0 && x.quantity > 0)
+                .GroupBy(x => x.productId)
+                .Select(g => new
+                {
+                    ProductId = g.Key,
+                    Quantity = g.Sum(x => x.quantity)
+                })
+                .ToList();
+
+            if (!selectedItems.Any())
+            {
+                TempData["Error"] = "Выберите хотя бы один товар.";
+                return RedirectToAction(nameof(Create));
+            }
+
+            decimal totalPrice = 0;
+
+            var orderProducts = new List<(Product Product, int Quantity)>();
+
+            foreach (var item in selectedItems)
+            {
+                var product = await _context.Products.FindAsync(item.ProductId);
+
+                if (product == null)
+                {
+                    TempData["Error"] = "Один из товаров не найден.";
+                    return RedirectToAction(nameof(Create));
+                }
+
+                if (product.StockQuantity < item.Quantity)
+                {
+                    TempData["Error"] = $"Недостаточно товара на складе: {product.Name}.";
+                    return RedirectToAction(nameof(Create));
+                }
+
+                totalPrice += product.Price * item.Quantity;
+                orderProducts.Add((product, item.Quantity));
+            }
 
             if (customer.DiscountPercent > 0)
             {
@@ -161,22 +179,23 @@ namespace BakeryOrderSystem.Controllers
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            var orderItem = new OrderItem
+            foreach (var item in orderProducts)
             {
-                OrderId = order.Id,
-                ProductId = product.Id,
-                Quantity = Quantity,
-                Price = product.Price
-            };
+                _context.OrderItems.Add(new OrderItem
+                {
+                    OrderId = order.Id,
+                    ProductId = item.Product.Id,
+                    Quantity = item.Quantity,
+                    Price = item.Product.Price
+                });
 
-            _context.OrderItems.Add(orderItem);
+                item.Product.StockQuantity -= item.Quantity;
 
-            product.StockQuantity -= Quantity;
-
-            if (product.StockQuantity <= 0)
-            {
-                product.StockQuantity = 0;
-                product.IsAvailable = false;
+                if (item.Product.StockQuantity <= 0)
+                {
+                    item.Product.StockQuantity = 0;
+                    item.Product.IsAvailable = false;
+                }
             }
 
             customer.PurchaseCount++;
@@ -195,23 +214,30 @@ namespace BakeryOrderSystem.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
                 return RedirectToAction(nameof(Index));
-
-            ViewBag.Customers = new SelectList(_context.Customers, "Id", "FullName");
-            ViewBag.Users = new SelectList(_context.Users, "Id", "FullName");
 
             return View(order);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Order order)
+        public async Task<IActionResult> Edit(int Id, string Status, string? Comment)
         {
-            order.Comment ??= "";
+            var order = await _context.Orders.FindAsync(Id);
 
-            _context.Orders.Update(order);
+            if (order == null)
+                return RedirectToAction(nameof(Index));
+
+            order.Status = Status;
+            order.Comment = Comment ?? "";
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
