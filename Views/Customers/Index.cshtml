@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<BakeryOrderSystem.Models.Customer>
 
 <h1>Клиенты</h1>
+
 <a asp-action="Create" class="btn btn-success mb-3">
     Добавить клиента
 </a>
@@ -19,13 +20,16 @@
     </div>
 </form>
 
-<table class="table table-bordered">
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>ФИО</th>
             <th>Телефон</th>
             <th>Email</th>
             <th>Адрес</th>
+            <th>Карта</th>
+            <th>Покупок</th>
+            <th>Скидка</th>
         </tr>
     </thead>
 
@@ -37,6 +41,9 @@
                 <td>@customer.Phone</td>
                 <td>@customer.Email</td>
                 <td>@customer.Address</td>
+                <td>@customer.DiscountCardNumber</td>
+                <td>@customer.PurchaseCount</td>
+                <td>@customer.DiscountPercent %</td>
             </tr>
         }
     </tbody>

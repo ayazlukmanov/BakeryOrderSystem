@@ -24,6 +24,21 @@
         <input asp-for="Address" class="form-control" />
     </div>
 
+    <div class="mb-3">
+        <label class="form-label">Номер скидочной карты</label>
+        <input asp-for="DiscountCardNumber" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Количество покупок</label>
+        <input asp-for="PurchaseCount" class="form-control" type="number" value="0" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Процент скидки</label>
+        <input asp-for="DiscountPercent" class="form-control" type="number" value="0" />
+    </div>
+
     <button type="submit" class="btn btn-success">
         Сохранить
     </button>

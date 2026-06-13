@@ -75,6 +75,7 @@ namespace BakeryOrderSystem.Controllers
             customer.Phone ??= "";
             customer.Email ??= "";
             customer.Address ??= "";
+            customer.DiscountCardNumber ??= "";
 
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();

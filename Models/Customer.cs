@@ -11,5 +11,11 @@
         public string Email { get; set; }
 
         public string Address { get; set; }
+
+        public string DiscountCardNumber { get; set; }
+
+        public int PurchaseCount { get; set; }
+
+        public int DiscountPercent { get; set; }
     }
 }
