@@ -2,6 +2,7 @@
 using BakeryOrderSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using BakeryOrderSystem.Helpers;
 
 namespace BakeryOrderSystem.Controllers
 {
@@ -40,7 +41,7 @@ namespace BakeryOrderSystem.Controllers
 
             foreach (var log in openedLogs)
             {
-                log.LogoutTime = DateTime.Now;
+                log.LogoutTime = DateTimeHelper.KazanNow();
             }
 
             await _context.SaveChangesAsync();
@@ -52,7 +53,7 @@ namespace BakeryOrderSystem.Controllers
             {
                 UserId = user.Id,
                 UserName = user.FullName,
-                LoginTime = DateTime.Now
+                LoginTime = DateTimeHelper.KazanNow()
             };
 
             _context.LoginLogs.Add(loginLog);
@@ -73,7 +74,7 @@ namespace BakeryOrderSystem.Controllers
 
                 if (log != null && log.LogoutTime == null)
                 {
-                    log.LogoutTime = DateTime.Now;
+                    log.LogoutTime = DateTimeHelper.KazanNow();
                     await _context.SaveChangesAsync();
                 }
             }

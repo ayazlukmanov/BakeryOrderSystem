@@ -1,5 +1,6 @@
 ﻿using BakeryOrderSystem.Data;
 using BakeryOrderSystem.Helpers;
+using BakeryOrderSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +28,8 @@ namespace BakeryOrderSystem.Controllers
 
             if (!RoleCheck.IsAdminOrManager(role))
             {
-                return RedirectToAction("Login", "Account");
+                TempData["Error"] = "У вас нет прав для доступа к данному разделу.";
+                return RedirectToAction("Index", "Home");
             }
 
             var customers = _context.Customers.AsQueryable();
@@ -43,6 +45,41 @@ namespace BakeryOrderSystem.Controllers
             ViewBag.Search = search;
 
             return View(await customers.ToListAsync());
+        }
+
+        public IActionResult Create()
+        {
+            var role = HttpContext.Session.GetString("Role");
+
+            if (!RoleCheck.IsAdminOrManager(role))
+            {
+                TempData["Error"] = "У вас нет прав для доступа к данному разделу.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(Customer customer)
+        {
+            var role = HttpContext.Session.GetString("Role");
+
+            if (!RoleCheck.IsAdminOrManager(role))
+            {
+                TempData["Error"] = "У вас нет прав для доступа к данному разделу.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            customer.FullName ??= "";
+            customer.Phone ??= "";
+            customer.Email ??= "";
+            customer.Address ??= "";
+
+            _context.Customers.Add(customer);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

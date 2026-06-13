@@ -1,0 +1,35 @@
+﻿@model BakeryOrderSystem.Models.Customer
+
+<h1>Добавление клиента</h1>
+
+<form asp-action="Create" method="post">
+
+    <div class="mb-3">
+        <label class="form-label">ФИО</label>
+        <input asp-for="FullName" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Телефон</label>
+        <input asp-for="Phone" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Адрес</label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Сохранить
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Назад
+    </a>
+
+</form>
