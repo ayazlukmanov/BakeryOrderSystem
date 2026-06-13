@@ -85,5 +85,36 @@ namespace BakeryOrderSystem.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        public async Task<IActionResult> Delete(int id)
+        {
+            var role = HttpContext.Session.GetString("Role");
+
+            if (!RoleCheck.IsAdminOrManager(role))
+            {
+                TempData["Error"] = "У вас нет прав для выполнения данной операции.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var hasOrders = await _context.Orders
+                .AnyAsync(o => o.CustomerId == id);
+
+            if (hasOrders)
+            {
+                TempData["Error"] =
+                    "Нельзя удалить клиента, так как у него есть заказы.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            var customer = await _context.Customers.FindAsync(id);
+
+            if (customer != null)
+            {
+                _context.Customers.Remove(customer);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
