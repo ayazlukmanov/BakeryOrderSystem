@@ -1,0 +1,75 @@
+﻿@model IEnumerable<BakeryOrderSystem.Models.Product>
+
+<h1>Отчёты и аналитика</h1>
+
+<div class="row mb-4">
+
+    <div class="col-md-3">
+        <div class="border rounded p-3 text-center">
+            <h3>@ViewBag.ProductsCount</h3>
+            <p>Товаров</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="border rounded p-3 text-center">
+            <h3>@ViewBag.CustomersCount</h3>
+            <p>Клиентов</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="border rounded p-3 text-center">
+            <h3>@ViewBag.OrdersCount</h3>
+            <p>Заказов</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="border rounded p-3 text-center">
+            <h3>@ViewBag.TotalRevenue ₽</h3>
+            <p>Выручка</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        Лучший клиент
+    </div>
+
+    <div class="card-body">
+        <h4>@ViewBag.TopCustomer</h4>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        Товары с низким остатком
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Остаток</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <td>@product.Name</td>
+                        <td>@product.StockQuantity</td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
