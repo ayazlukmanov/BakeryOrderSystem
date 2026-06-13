@@ -221,6 +221,17 @@ namespace BakeryOrderSystem.Controllers
             existingProduct.Category = product.Category;
             existingProduct.CategoryId = category.Id;
             existingProduct.IsAvailable = product.IsAvailable;
+            existingProduct.StockQuantity = product.StockQuantity;
+
+            if (existingProduct.StockQuantity <= 0)
+            {
+                existingProduct.StockQuantity = 0;
+                existingProduct.IsAvailable = false;
+            }
+            else
+            {
+                existingProduct.IsAvailable = product.IsAvailable;
+            }
 
             await _context.SaveChangesAsync();
 
