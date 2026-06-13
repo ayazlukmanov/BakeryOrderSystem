@@ -1,14 +1,18 @@
 ﻿@model IEnumerable<BakeryOrderSystem.Models.Product>
+
 <h1>Продукция пекарни</h1>
+
 <a asp-action="Create" class="btn btn-success mb-3">
     Добавить товар
 </a>
+
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger">
         @TempData["Error"]
     </div>
 }
+
 <form asp-action="Index" method="get" class="row mb-3">
 
     <div class="col-md-4">
@@ -49,13 +53,14 @@
 
 </form>
 
-<table class="table table-bordered">
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>Название</th>
             <th>Описание</th>
             <th>Цена</th>
             <th>Категория</th>
+            <th>Остаток</th>
             <th>Доступен</th>
             <th>Действия</th>
         </tr>
@@ -67,8 +72,28 @@
             <tr>
                 <td>@product.Name</td>
                 <td>@product.Description</td>
-                <td>@product.Price</td>
+                <td>@product.Price ₽</td>
                 <td>@product.Category</td>
+
+                <td>
+                    @if (product.StockQuantity <= 0)
+                    {
+                        <span class="badge bg-danger">Нет в наличии</span>
+                    }
+                    else if (product.StockQuantity <= 3)
+                    {
+                        <span class="badge bg-warning text-dark">
+                            @product.StockQuantity шт.
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">
+                            @product.StockQuantity шт.
+                        </span>
+                    }
+                </td>
+
                 <td>@(product.IsAvailable ? "Да" : "Нет")</td>
 
                 <td>
