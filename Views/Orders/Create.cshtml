@@ -18,11 +18,13 @@
 
     <div class="mb-3">
         <label class="form-label">Товар</label>
-        <select name="ProductId" class="form-control">
+        <select name="ProductId" id="productSelect" class="form-control">
             @foreach (var product in ViewBag.Products)
             {
-                <option value="@product.Id">
-                    @product.Name — @product.Price ₽
+                <option value="@product.Id"
+                        data-price="@product.Price"
+                        data-stock="@product.StockQuantity">
+                    @product.Name
                 </option>
             }
         </select>
@@ -30,7 +32,19 @@
 
     <div class="mb-3">
         <label class="form-label">Количество</label>
-        <input name="Quantity" class="form-control" type="number" min="1" value="1" required />
+        <input name="Quantity"
+               id="quantityInput"
+               class="form-control"
+               type="number"
+               min="1"
+               value="1"
+               required />
+    </div>
+
+    <div class="alert alert-info">
+        <div>Цена за штуку: <strong><span id="priceText">0</span> ₽</strong></div>
+        <div>Остаток на складе: <strong><span id="stockText">0</span> шт.</strong></div>
+        <div>Итого: <strong><span id="totalText">0</span> ₽</strong></div>
     </div>
 
     <div class="mb-3">
@@ -45,10 +59,34 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Комментарий</label>
+        <label class="form-label">Примечание к заказу</label>
         <textarea name="Comment" class="form-control"></textarea>
     </div>
 
     <button type="submit" class="btn btn-primary">Сохранить</button>
     <a asp-action="Index" class="btn btn-secondary">Назад</a>
 </form>
+
+@section Scripts {
+    <script>
+        function updateOrderInfo() {
+            const select = document.getElementById("productSelect");
+            const quantityInput = document.getElementById("quantityInput");
+
+            const selected = select.options[select.selectedIndex];
+
+            const price = parseFloat(selected.getAttribute("data-price")) || 0;
+            const stock = parseInt(selected.getAttribute("data-stock")) || 0;
+            const quantity = parseInt(quantityInput.value) || 1;
+
+            document.getElementById("priceText").innerText = price.toFixed(2);
+            document.getElementById("stockText").innerText = stock;
+            document.getElementById("totalText").innerText = (price * quantity).toFixed(2);
+        }
+
+        document.getElementById("productSelect").addEventListener("change", updateOrderInfo);
+        document.getElementById("quantityInput").addEventListener("input", updateOrderInfo);
+
+        updateOrderInfo();
+    </script>
+}
