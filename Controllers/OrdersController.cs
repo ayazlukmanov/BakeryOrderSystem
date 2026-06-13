@@ -21,9 +21,7 @@ namespace BakeryOrderSystem.Controllers
             var userName = HttpContext.Session.GetString("UserName");
 
             if (userName == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var orders = _context.Orders
                 .Include(o => o.Customer)
@@ -39,14 +37,10 @@ namespace BakeryOrderSystem.Controllers
             }
 
             if (!string.IsNullOrEmpty(status))
-            {
                 orders = orders.Where(o => o.Status == status);
-            }
 
             if (!string.IsNullOrEmpty(employee))
-            {
                 orders = orders.Where(o => o.User.FullName == employee);
-            }
 
             orders = sortOrder switch
             {
@@ -59,6 +53,7 @@ namespace BakeryOrderSystem.Controllers
             ViewBag.Search = search;
             ViewBag.Status = status;
             ViewBag.SortOrder = sortOrder;
+            ViewBag.Employee = employee;
 
             ViewBag.Statuses = await _context.Orders
                 .Select(o => o.Status)
@@ -73,8 +68,6 @@ namespace BakeryOrderSystem.Controllers
                 .OrderBy(u => u)
                 .ToListAsync();
 
-            ViewBag.Employee = employee;
-
             return View(await orders.ToListAsync());
         }
 
@@ -83,14 +76,16 @@ namespace BakeryOrderSystem.Controllers
             var userName = HttpContext.Session.GetString("UserName");
 
             if (userName == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
-            ViewBag.Customers = new SelectList(await _context.Customers.ToListAsync(), "Id", "FullName");
+            ViewBag.Customers = new SelectList(
+                await _context.Customers.OrderBy(c => c.FullName).ToListAsync(),
+                "Id",
+                "FullName"
+            );
 
             ViewBag.Products = await _context.Products
-                .Where(p => p.IsAvailable)
+                .Where(p => p.IsAvailable && p.StockQuantity > 0)
                 .OrderBy(p => p.Name)
                 .ToListAsync();
 
@@ -108,17 +103,13 @@ namespace BakeryOrderSystem.Controllers
             var userName = HttpContext.Session.GetString("UserName");
 
             if (userName == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var currentUser = await _context.Users
                 .FirstOrDefaultAsync(u => u.FullName == userName);
 
             if (currentUser == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var product = await _context.Products.FindAsync(ProductId);
 
@@ -134,6 +125,12 @@ namespace BakeryOrderSystem.Controllers
                 return RedirectToAction(nameof(Create));
             }
 
+            if (product.StockQuantity < Quantity)
+            {
+                TempData["Error"] = "Недостаточно товара на складе.";
+                return RedirectToAction(nameof(Create));
+            }
+
             var customer = await _context.Customers.FindAsync(CustomerId);
 
             if (customer == null)
@@ -146,12 +143,12 @@ namespace BakeryOrderSystem.Controllers
 
             if (customer.DiscountPercent > 0)
             {
-                totalPrice = totalPrice - (totalPrice * customer.DiscountPercent / 100);
+                totalPrice -= totalPrice * customer.DiscountPercent / 100;
             }
 
             var order = new Order
             {
-                CustomerId = CustomerId,
+                CustomerId = customer.Id,
                 UserId = currentUser.Id,
                 Status = Status,
                 TotalPrice = totalPrice,
@@ -172,20 +169,22 @@ namespace BakeryOrderSystem.Controllers
 
             _context.OrderItems.Add(orderItem);
 
+            product.StockQuantity -= Quantity;
+
+            if (product.StockQuantity <= 0)
+            {
+                product.StockQuantity = 0;
+                product.IsAvailable = false;
+            }
+
             customer.PurchaseCount++;
 
             if (customer.PurchaseCount >= 20)
-            {
                 customer.DiscountPercent = 10;
-            }
             else if (customer.PurchaseCount >= 10)
-            {
                 customer.DiscountPercent = 5;
-            }
             else if (customer.PurchaseCount >= 5)
-            {
                 customer.DiscountPercent = 3;
-            }
 
             await _context.SaveChangesAsync();
 
@@ -197,9 +196,7 @@ namespace BakeryOrderSystem.Controllers
             var order = await _context.Orders.FindAsync(id);
 
             if (order == null)
-            {
                 return RedirectToAction(nameof(Index));
-            }
 
             ViewBag.Customers = new SelectList(_context.Customers, "Id", "FullName");
             ViewBag.Users = new SelectList(_context.Users, "Id", "FullName");
@@ -223,21 +220,16 @@ namespace BakeryOrderSystem.Controllers
             var order = await _context.Orders.FindAsync(id);
 
             if (order == null)
-            {
                 return RedirectToAction(nameof(Index));
-            }
 
             var orderItems = await _context.OrderItems
                 .Where(oi => oi.OrderId == id)
                 .ToListAsync();
 
             if (orderItems.Any())
-            {
                 _context.OrderItems.RemoveRange(orderItems);
-            }
 
             _context.Orders.Remove(order);
-
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
