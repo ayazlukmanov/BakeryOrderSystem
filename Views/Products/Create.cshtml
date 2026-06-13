@@ -3,55 +3,57 @@
 <h1>Добавление продукции</h1>
 
 <form asp-action="Create" method="post">
+
     <div class="mb-3">
-        <label class="form-label">Название</label>
-        <select id="productSelect" class="form-control">
-            <option value="">Выберите товар</option>
-
-            @foreach (var product in ViewBag.Products)
-            {
-                <option value="@product.Name"
-                        data-description="@product.Description"
-                        data-category="@product.Category">
-                    @product.Name
-                </option>
-            }
-        </select>
-
-        <input type="hidden" asp-for="Name" id="productName" />
+        <label asp-for="Name" class="form-label">Название</label>
+        <input asp-for="Name" class="form-control" />
     </div>
 
     <div class="mb-3">
         <label asp-for="Description" class="form-label">Описание</label>
-        <input asp-for="Description" id="productDescription" class="form-control" readonly />
+        <input asp-for="Description" class="form-control" />
     </div>
 
     <div class="mb-3">
         <label asp-for="Category" class="form-label">Категория</label>
-        <input asp-for="Category" id="productCategory" class="form-control" readonly />
+        <input asp-for="Category" class="form-control" />
     </div>
 
     <div class="mb-3">
         <label asp-for="Price" class="form-label">Цена</label>
-        <input asp-for="Price" class="form-control" />
+        <input asp-for="Price"
+               class="form-control"
+               type="number"
+               step="0.01" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StockQuantity" class="form-label">
+            Остаток на складе
+        </label>
+
+        <input asp-for="StockQuantity"
+               class="form-control"
+               type="number"
+               min="0" />
     </div>
 
     <div class="form-check mb-3">
-        <input asp-for="IsAvailable" class="form-check-input" />
-        <label class="form-check-label">Доступен</label>
+        <input asp-for="IsAvailable"
+               class="form-check-input" />
+
+        <label class="form-check-label">
+            Доступен
+        </label>
     </div>
 
-    <button type="submit" class="btn btn-primary">Сохранить</button>
-    <a asp-action="Index" class="btn btn-secondary">Назад</a>
-</form>
-@section Scripts {
-    <script>
-        document.getElementById("productSelect").addEventListener("change", function () {
-            const selected = this.options[this.selectedIndex];
+    <button type="submit" class="btn btn-success">
+        Сохранить
+    </button>
 
-            document.getElementById("productName").value = selected.value || "";
-            document.getElementById("productDescription").value = selected.getAttribute("data-description") || "";
-            document.getElementById("productCategory").value = selected.getAttribute("data-category") || "";
-        });
-    </script>
-}
+    <a asp-action="Index"
+           class="btn btn-secondary">
+        Назад
+    </a>
+
+</form>

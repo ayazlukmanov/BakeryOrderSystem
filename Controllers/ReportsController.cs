@@ -15,6 +15,14 @@ namespace BakeryOrderSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var role = HttpContext.Session.GetString("Role");
+
+            if (role != "Администратор" && role != "Менеджер")
+            {
+                TempData["Error"] = "У вас нет доступа к отчетам.";
+                return RedirectToAction("Index", "Home");
+            }
+
             ViewBag.ProductsCount = await _context.Products.CountAsync();
             ViewBag.CustomersCount = await _context.Customers.CountAsync();
             ViewBag.OrdersCount = await _context.Orders.CountAsync();

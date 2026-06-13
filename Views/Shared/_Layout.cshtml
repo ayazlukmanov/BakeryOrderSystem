@@ -63,13 +63,17 @@
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                                   asp-controller="Reports"
-                                   asp-action="Index">
-                                Отчёты
-                            </a>
-                        </li>
+                        @if (Context.Session.GetString("Role") == "Администратор" ||
+                             Context.Session.GetString("Role") == "Менеджер")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                       asp-controller="Reports"
+                                       asp-action="Index">
+                                    Отчёты
+                                </a>
+                            </li>
+                        }
 
                         @if (Context.Session.GetString("Role") == "Администратор")
                         {

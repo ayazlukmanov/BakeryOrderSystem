@@ -70,8 +70,6 @@ namespace BakeryOrderSystem.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            ViewBag.Products = await _context.Products.ToListAsync();
-
             return View();
         }
 

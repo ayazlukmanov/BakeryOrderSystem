@@ -40,6 +40,11 @@
         <input asp-for="Price" class="form-control" />
     </div>
 
+    <div class="mb-3">
+        <label class="form-label">Остаток на складе</label>
+        <input asp-for="StockQuantity" class="form-control" type="number" min="0" />
+    </div>
+
     <div class="form-check mb-3">
         <input asp-for="IsAvailable" class="form-check-input" />
         <label class="form-check-label">Доступен</label>
