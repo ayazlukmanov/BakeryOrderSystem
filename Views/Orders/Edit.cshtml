@@ -8,57 +8,49 @@
 
     <div class="mb-3">
         <label class="form-label">Клиент</label>
-
-        <select asp-for="CustomerId"
-                asp-items="ViewBag.Customers"
-                class="form-control">
-        </select>
+        <input value="@Model.Customer.FullName" class="form-control" readonly />
     </div>
 
     <div class="mb-3">
         <label class="form-label">Сотрудник</label>
-
-        <select asp-for="UserId"
-                asp-items="ViewBag.Users"
-                class="form-control">
-        </select>
+        <input value="@Model.User.FullName" class="form-control" readonly />
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Статус</label>
+        <label class="form-label">Состав заказа</label>
 
-        <select asp-for="Status" class="form-control">
-            <option>Новый</option>
-            <option>В работе</option>
-            <option>Готов</option>
-            <option>Выдан</option>
-            <option>Отменен</option>
-        </select>
+        <div class="border rounded p-3 bg-light">
+            @foreach (var item in Model.OrderItems)
+            {
+                <div>
+                    @item.Product.Name × @item.Quantity шт. — @item.Price ₽
+                </div>
+            }
+        </div>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Сумма</label>
-
-        <input asp-for="TotalPrice"
-               class="form-control" />
+        <input value="@Model.TotalPrice ₽" class="form-control" readonly />
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Комментарий</label>
+        <label class="form-label">Статус</label>
+        <select name="Status" class="form-control">
+            <option selected="@(Model.Status == "Новый")">Новый</option>
+            <option selected="@(Model.Status == "В работе")">В работе</option>
+            <option selected="@(Model.Status == "Готов")">Готов</option>
+            <option selected="@(Model.Status == "Выдан")">Выдан</option>
+            <option selected="@(Model.Status == "Отменен")">Отменен</option>
+        </select>
+    </div>
 
-        <textarea asp-for="Comment"
-                      class="form-control">
-        </textarea>
-        </div>
+    <div class="mb-3">
+        <label class="form-label">Примечание к заказу</label>
+        <textarea name="Comment" class="form-control">@Model.Comment</textarea>
+    </div>
 
-        <button type="submit"
-                class="btn btn-primary">
-            Сохранить
-        </button>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
 
-        <a asp-action="Index"
-               class="btn btn-secondary">
-            Назад
-        </a>
-
-    </form>
+</form>
