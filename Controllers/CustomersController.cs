@@ -75,7 +75,10 @@ namespace BakeryOrderSystem.Controllers
             customer.Phone ??= "";
             customer.Email ??= "";
             customer.Address ??= "";
-            customer.DiscountCardNumber ??= "";
+
+            customer.DiscountCardNumber = "CARD-" + DateTime.Now.Ticks.ToString().Substring(10);
+            customer.PurchaseCount = 0;
+            customer.DiscountPercent = 0;
 
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
