@@ -110,7 +110,54 @@ namespace BakeryOrderSystem.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        public IActionResult CreateNew()
+        {
+            var role = HttpContext.Session.GetString("Role");
 
+            if (role != "Администратор")
+            {
+                TempData["Error"] = "Только администратор может создавать новые товары.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateNew(Product product)
+        {
+            var role = HttpContext.Session.GetString("Role");
+
+            if (role != "Администратор")
+            {
+                TempData["Error"] = "Только администратор может создавать новые товары.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            product.Description ??= "";
+            product.Category ??= "";
+
+            var category = await _context.Categories
+                .FirstOrDefaultAsync(c => c.Name == product.Category);
+
+            if (category == null)
+            {
+                category = new Category
+                {
+                    Name = product.Category
+                };
+
+                _context.Categories.Add(category);
+                await _context.SaveChangesAsync();
+            }
+
+            product.CategoryId = category.Id;
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
         public async Task<IActionResult> Edit(int id)
         {
             var role = HttpContext.Session.GetString("Role");

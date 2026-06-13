@@ -1,0 +1,55 @@
+﻿@model BakeryOrderSystem.Models.Product
+
+<h1>Добавление нового товара</h1>
+
+<form asp-action="CreateNew" method="post">
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Название</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Описание</label>
+        <input asp-for="Description" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Category" class="form-label">Категория</label>
+        <input asp-for="Category" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label">Цена</label>
+        <input asp-for="Price" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StockQuantity" class="form-label">
+            Остаток на складе
+        </label>
+
+        <input asp-for="StockQuantity"
+               class="form-control"
+               type="number" />
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="IsAvailable"
+               class="form-check-input" />
+
+        <label class="form-check-label">
+            Доступен
+        </label>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Сохранить
+    </button>
+
+    <a asp-action="Index"
+           class="btn btn-secondary">
+        Назад
+    </a>
+
+</form>
