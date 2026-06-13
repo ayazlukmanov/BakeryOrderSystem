@@ -1,15 +1,18 @@
 ﻿@model IEnumerable<BakeryOrderSystem.Models.Order>
 
 <h1>Заказы</h1>
+
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger">
         @TempData["Error"]
     </div>
 }
+
 <a asp-action="Create" class="btn btn-success mb-3">
     Добавить заказ
 </a>
+
 <form asp-action="Index" method="get" class="row mb-3">
 
     <div class="col-md-2">
@@ -35,7 +38,6 @@
 
     <div class="col-md-3">
         <select name="employee" class="form-control">
-
             <option value="">Все сотрудники</option>
 
             @foreach (var employee in ViewBag.Employees)
@@ -44,7 +46,6 @@
                     @employee
                 </option>
             }
-
         </select>
     </div>
 
@@ -64,7 +65,8 @@
     </div>
 
 </form>
-<table class="table table-bordered">
+
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>ID</th>
@@ -72,7 +74,7 @@
             <th>Сотрудник</th>
             <th>Дата</th>
             <th>Статус</th>
-            <th>Комментарий</th>
+            <th>Состав заказа</th>
             <th>Сумма</th>
             <th>Действия</th>
         </tr>
@@ -87,7 +89,23 @@
                 <td>@order.User.FullName</td>
                 <td>@order.OrderDate</td>
                 <td>@order.Status</td>
-                <td>@order.Comment</td>
+
+                <td>
+                    @if (order.OrderItems != null && order.OrderItems.Any())
+                    {
+                        foreach (var item in order.OrderItems)
+                        {
+                            <div>
+                                @item.Product.Name × @item.Quantity шт.
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">Нет данных</span>
+                    }
+                </td>
+
                 <td>@order.TotalPrice ₽</td>
 
                 <td>

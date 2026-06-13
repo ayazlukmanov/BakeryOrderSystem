@@ -26,6 +26,8 @@ namespace BakeryOrderSystem.Controllers
             var orders = _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
