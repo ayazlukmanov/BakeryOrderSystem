@@ -8,7 +8,11 @@
 
     <div class="mb-3">
         <label class="form-label">Клиент</label>
-        <input value="@Model.Customer.FullName" class="form-control" readonly />
+
+        <select asp-for="CustomerId"
+                asp-items="ViewBag.Customers"
+                class="form-control">
+        </select>
     </div>
 
     <div class="mb-3">

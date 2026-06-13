@@ -223,18 +223,29 @@ namespace BakeryOrderSystem.Controllers
 
             if (order == null)
                 return RedirectToAction(nameof(Index));
+            ViewBag.Customers = new SelectList(
+    _context.Customers,
+    "Id",
+    "FullName",
+    order.CustomerId
+);
 
             return View(order);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int Id, string Status, string? Comment)
+        public async Task<IActionResult> Edit(
+          int Id,
+          int CustomerId,
+          string Status,
+          string? Comment)
         {
             var order = await _context.Orders.FindAsync(Id);
 
             if (order == null)
                 return RedirectToAction(nameof(Index));
 
+            order.CustomerId = CustomerId;
             order.Status = Status;
             order.Comment = Comment ?? "";
 
