@@ -12,7 +12,8 @@
             {
                 <option value="@product.Name"
                         data-description="@product.Description"
-                        data-category="@product.Category">
+                        data-category="@product.Category"
+                        data-price="@product.Price">
                     @product.Name
                 </option>
             }
@@ -33,7 +34,9 @@
 
     <div class="mb-3">
         <label asp-for="Price" class="form-label">Цена</label>
-        <input asp-for="Price" class="form-control" />
+        <input asp-for="Price"
+               id="productPrice"
+               class="form-control" />
     </div>
 
     <div class="mb-3">
@@ -58,6 +61,7 @@
             document.getElementById("productName").value = selected.value || "";
             document.getElementById("productDescription").value = selected.getAttribute("data-description") || "";
             document.getElementById("productCategory").value = selected.getAttribute("data-category") || "";
+            document.getElementById("productPrice").value = selected.getAttribute("data-price") || "";
         });
     </script>
 }
