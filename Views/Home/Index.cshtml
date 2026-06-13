@@ -1,52 +1,68 @@
 ﻿@{
     ViewData["Title"] = "Главная";
 }
+
 @if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger">
+    <div class="alert alert-danger shadow-sm">
         @TempData["Error"]
     </div>
 }
 
-<div class="text-center mb-5">
-    <h1 class="display-4 fw-bold">
-        Информационная система пекарни
-    </h1>
+<div class="p-5 mb-4 bg-light rounded-4 shadow-sm border">
+    <div class="container-fluid py-3">
+        <h1 class="display-5 fw-bold mb-3">
+            🥐 Информационная система пекарни
+        </h1>
 
-    <p class="lead">
-        Система учета и управления заказами для предприятия малого бизнеса
-    </p>
+        <p class="fs-5 text-muted mb-0">
+            Учет продукции, клиентов, заказов, сотрудников и складских остатков
+            для предприятия малого бизнеса.
+        </p>
+    </div>
 </div>
 
 @if (ViewBag.ShowStatistics == true)
 {
-    <div class="row text-center mb-5">
+    <div class="row mb-4">
 
-        <div class="col-md-3">
-            <div class="border rounded p-3 shadow-sm">
-                <h3>@ViewBag.ProductsCount</h3>
-                <p>Товаров</p>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="fs-1">🍞</div>
+                    <h2 class="fw-bold">@ViewBag.ProductsCount</h2>
+                    <p class="text-muted mb-0">Товаров</p>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="border rounded p-3 shadow-sm">
-                <h3>@ViewBag.CustomersCount</h3>
-                <p>Клиентов</p>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="fs-1">👥</div>
+                    <h2 class="fw-bold">@ViewBag.CustomersCount</h2>
+                    <p class="text-muted mb-0">Клиентов</p>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="border rounded p-3 shadow-sm">
-                <h3>@ViewBag.OrdersCount</h3>
-                <p>Заказов</p>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="fs-1">🧾</div>
+                    <h2 class="fw-bold">@ViewBag.OrdersCount</h2>
+                    <p class="text-muted mb-0">Заказов</p>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="border rounded p-3 shadow-sm">
-                <h3>@ViewBag.TotalRevenue ₽</h3>
-                <p>Выручка</p>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="fs-1">💰</div>
+                    <h2 class="fw-bold">@ViewBag.TotalRevenue ₽</h2>
+                    <p class="text-muted mb-0">Выручка</p>
+                </div>
             </div>
         </div>
 
@@ -55,65 +71,53 @@
 
 <div class="row">
 
-    <div class="col-md-4 mb-3">
-        <div class="card shadow-sm h-100">
-
-            <div class="card-body text-center">
-
-                <h3>Продукция</h3>
-
-                <p>
-                    Управление товарами и выпечкой пекарни.
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-body p-4">
+                <div class="fs-1 mb-3">🥖</div>
+                <h3 class="fw-bold">Продукция</h3>
+                <p class="text-muted">
+                    Управление ассортиментом, ценами, категориями и остатками на складе.
                 </p>
-
                 <a asp-controller="Products"
                        asp-action="Index"
-                       class="btn btn-primary">
-                    Перейти
+                       class="btn btn-primary w-100">
+                    Перейти к продукции
                 </a>
-
             </div>
         </div>
     </div>
 
-    <div class="col-md-4 mb-3">
-        <div class="card shadow-sm h-100">
-
-            <div class="card-body text-center">
-
-                <h3>Клиенты</h3>
-
-                <p>
-                    Хранение данных клиентов и контактной информации.
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-body p-4">
+                <div class="fs-1 mb-3">👤</div>
+                <h3 class="fw-bold">Клиенты</h3>
+                <p class="text-muted">
+                    Хранение данных клиентов, скидочных карт и количества покупок.
                 </p>
-
                 <a asp-controller="Customers"
                        asp-action="Index"
-                       class="btn btn-primary">
-                    Перейти
+                       class="btn btn-primary w-100">
+                    Перейти к клиентам
                 </a>
-
             </div>
         </div>
     </div>
 
-    <div class="col-md-4 mb-3">
-        <div class="card shadow-sm h-100">
-
-            <div class="card-body text-center">
-
-                <h3>Заказы</h3>
-
-                <p>
-                    Создание и управление заказами клиентов.
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-body p-4">
+                <div class="fs-1 mb-3">📦</div>
+                <h3 class="fw-bold">Заказы</h3>
+                <p class="text-muted">
+                    Оформление заказов, выбор товаров и автоматический расчет стоимости.
                 </p>
-
                 <a asp-controller="Orders"
                        asp-action="Index"
-                       class="btn btn-primary">
-                    Перейти
+                       class="btn btn-primary w-100">
+                    Перейти к заказам
                 </a>
-
             </div>
         </div>
     </div>
