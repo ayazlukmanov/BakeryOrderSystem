@@ -217,7 +217,9 @@ namespace BakeryOrderSystem.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Orders
+                .Include(o => o.Customer)
+                .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
                 return RedirectToAction(nameof(Index));
@@ -226,10 +228,45 @@ namespace BakeryOrderSystem.Controllers
                 .Where(oi => oi.OrderId == id)
                 .ToListAsync();
 
+            foreach (var item in orderItems)
+            {
+                var product = await _context.Products.FindAsync(item.ProductId);
+
+                if (product != null)
+                {
+                    product.StockQuantity += item.Quantity;
+
+                    if (product.StockQuantity > 0)
+                    {
+                        product.IsAvailable = true;
+                    }
+                }
+            }
+
+            if (order.Customer != null)
+            {
+                if (order.Customer.PurchaseCount > 0)
+                {
+                    order.Customer.PurchaseCount--;
+                }
+
+                if (order.Customer.PurchaseCount >= 20)
+                    order.Customer.DiscountPercent = 10;
+                else if (order.Customer.PurchaseCount >= 10)
+                    order.Customer.DiscountPercent = 5;
+                else if (order.Customer.PurchaseCount >= 5)
+                    order.Customer.DiscountPercent = 3;
+                else
+                    order.Customer.DiscountPercent = 0;
+            }
+
             if (orderItems.Any())
+            {
                 _context.OrderItems.RemoveRange(orderItems);
+            }
 
             _context.Orders.Remove(order);
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
