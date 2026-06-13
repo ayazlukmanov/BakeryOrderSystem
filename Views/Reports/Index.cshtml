@@ -5,28 +5,28 @@
 <div class="row mb-4">
 
     <div class="col-md-3">
-        <div class="border rounded p-3 text-center">
+        <div class="border rounded p-3 text-center shadow-sm">
             <h3>@ViewBag.ProductsCount</h3>
             <p>Товаров</p>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="border rounded p-3 text-center">
+        <div class="border rounded p-3 text-center shadow-sm">
             <h3>@ViewBag.CustomersCount</h3>
             <p>Клиентов</p>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="border rounded p-3 text-center">
+        <div class="border rounded p-3 text-center shadow-sm">
             <h3>@ViewBag.OrdersCount</h3>
             <p>Заказов</p>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="border rounded p-3 text-center">
+        <div class="border rounded p-3 text-center shadow-sm">
             <h3>@ViewBag.TotalRevenue ₽</h3>
             <p>Выручка</p>
         </div>
@@ -34,14 +34,50 @@
 
 </div>
 
-<div class="card mb-4">
-    <div class="card-header">
-        Лучший клиент
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">Лучший клиент</div>
+            <div class="card-body">
+                <h4>@ViewBag.TopCustomer</h4>
+                <p class="mb-1">Покупок: @ViewBag.TopCustomerPurchases</p>
+                <p class="mb-0">Скидка: @ViewBag.TopCustomerDiscount %</p>
+            </div>
+        </div>
     </div>
 
-    <div class="card-body">
-        <h4>@ViewBag.TopCustomer</h4>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">Популярный товар</div>
+            <div class="card-body">
+                <h4>@ViewBag.TopProduct</h4>
+                <p class="mb-0">Продано: @ViewBag.TopProductQuantity шт.</p>
+            </div>
+        </div>
     </div>
+
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">Лучший сотрудник</div>
+            <div class="card-body">
+                <h4>@ViewBag.TopEmployee</h4>
+                <p class="mb-0">Оформлено заказов: @ViewBag.TopEmployeeOrders</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <div class="border rounded p-3 text-center shadow-sm">
+            <h3>@ViewBag.AverageCheck ₽</h3>
+            <p>Средний чек</p>
+        </div>
+    </div>
+
 </div>
 
 <div class="card">
@@ -51,25 +87,33 @@
 
     <div class="card-body">
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Товар</th>
-                    <th>Остаток</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @foreach (var product in Model)
-                {
+        @if (Model.Any())
+        {
+            <table class="table table-bordered">
+                <thead>
                     <tr>
-                        <td>@product.Name</td>
-                        <td>@product.StockQuantity</td>
+                        <th>Товар</th>
+                        <th>Остаток</th>
                     </tr>
-                }
-            </tbody>
+                </thead>
 
-        </table>
+                <tbody>
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td>@product.Name</td>
+                            <td>@product.StockQuantity шт.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-success mb-0">
+                Товаров с низким остатком нет.
+            </div>
+        }
 
     </div>
 </div>
