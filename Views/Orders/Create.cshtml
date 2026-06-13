@@ -2,20 +2,40 @@
 
 <h1>Добавление заказа</h1>
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
 <form asp-action="Create" method="post">
+
     <div class="mb-3">
         <label class="form-label">Клиент</label>
-        <select asp-for="CustomerId" asp-items="ViewBag.Customers" class="form-control"></select>
+        <select name="CustomerId" asp-items="ViewBag.Customers" class="form-control"></select>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Сотрудник</label>
-        <select asp-for="UserId" asp-items="ViewBag.Users" class="form-control"></select>
+        <label class="form-label">Товар</label>
+        <select name="ProductId" class="form-control">
+            @foreach (var product in ViewBag.Products)
+            {
+                <option value="@product.Id">
+                    @product.Name — @product.Price ₽
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Количество</label>
+        <input name="Quantity" class="form-control" type="number" min="1" value="1" required />
     </div>
 
     <div class="mb-3">
         <label class="form-label">Статус</label>
-        <select asp-for="Status" class="form-control">
+        <select name="Status" class="form-control">
             <option>Новый</option>
             <option>В работе</option>
             <option>Готов</option>
@@ -25,13 +45,8 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Сумма</label>
-        <input asp-for="TotalPrice" class="form-control" />
-    </div>
-
-    <div class="mb-3">
         <label class="form-label">Комментарий</label>
-        <textarea asp-for="Comment" class="form-control"></textarea>
+        <textarea name="Comment" class="form-control"></textarea>
     </div>
 
     <button type="submit" class="btn btn-primary">Сохранить</button>

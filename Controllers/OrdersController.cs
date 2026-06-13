@@ -1,4 +1,5 @@
 ﻿using BakeryOrderSystem.Data;
+using BakeryOrderSystem.Helpers;
 using BakeryOrderSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -14,6 +15,7 @@ namespace BakeryOrderSystem.Controllers
         {
             _context = context;
         }
+
         public async Task<IActionResult> Index(string search, string status, string employee, string sortOrder)
         {
             var userName = HttpContext.Session.GetString("UserName");
@@ -66,42 +68,125 @@ namespace BakeryOrderSystem.Controllers
                 .ToListAsync();
 
             ViewBag.Employees = await _context.Users
-    .Select(u => u.FullName)
-    .Distinct()
-    .OrderBy(u => u)
-    .ToListAsync();
+                .Select(u => u.FullName)
+                .Distinct()
+                .OrderBy(u => u)
+                .ToListAsync();
 
             ViewBag.Employee = employee;
 
             return View(await orders.ToListAsync());
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.Customers = new SelectList(_context.Customers, "Id", "FullName");
-            ViewBag.Users = new SelectList(_context.Users, "Id", "FullName");
+            var userName = HttpContext.Session.GetString("UserName");
+
+            if (userName == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            ViewBag.Customers = new SelectList(await _context.Customers.ToListAsync(), "Id", "FullName");
+
+            ViewBag.Products = await _context.Products
+                .Where(p => p.IsAvailable)
+                .OrderBy(p => p.Name)
+                .ToListAsync();
 
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Create(
             int CustomerId,
-            int UserId,
+            int ProductId,
+            int Quantity,
             string Status,
-            decimal TotalPrice,
             string? Comment)
         {
+            var userName = HttpContext.Session.GetString("UserName");
+
+            if (userName == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var currentUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.FullName == userName);
+
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var product = await _context.Products.FindAsync(ProductId);
+
+            if (product == null)
+            {
+                TempData["Error"] = "Выбранный товар не найден.";
+                return RedirectToAction(nameof(Create));
+            }
+
+            if (Quantity <= 0)
+            {
+                TempData["Error"] = "Количество товара должно быть больше нуля.";
+                return RedirectToAction(nameof(Create));
+            }
+
+            var customer = await _context.Customers.FindAsync(CustomerId);
+
+            if (customer == null)
+            {
+                TempData["Error"] = "Клиент не найден.";
+                return RedirectToAction(nameof(Create));
+            }
+
+            var totalPrice = product.Price * Quantity;
+
+            if (customer.DiscountPercent > 0)
+            {
+                totalPrice = totalPrice - (totalPrice * customer.DiscountPercent / 100);
+            }
+
             var order = new Order
             {
                 CustomerId = CustomerId,
-                UserId = UserId,
+                UserId = currentUser.Id,
                 Status = Status,
-                TotalPrice = TotalPrice,
+                TotalPrice = totalPrice,
                 Comment = Comment ?? "",
-                OrderDate = DateTime.Now
+                OrderDate = DateTimeHelper.KazanNow()
             };
 
             _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            var orderItem = new OrderItem
+            {
+                OrderId = order.Id,
+                ProductId = product.Id,
+                Quantity = Quantity,
+                Price = product.Price
+            };
+
+            _context.OrderItems.Add(orderItem);
+
+            customer.PurchaseCount++;
+
+            if (customer.PurchaseCount >= 20)
+            {
+                customer.DiscountPercent = 10;
+            }
+            else if (customer.PurchaseCount >= 10)
+            {
+                customer.DiscountPercent = 5;
+            }
+            else if (customer.PurchaseCount >= 5)
+            {
+                customer.DiscountPercent = 3;
+            }
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
@@ -132,6 +217,7 @@ namespace BakeryOrderSystem.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
         public async Task<IActionResult> Delete(int id)
         {
             var order = await _context.Orders.FindAsync(id);
